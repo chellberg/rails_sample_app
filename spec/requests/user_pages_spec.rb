@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+
 describe "User pages" do
 
   subject { page } #specifies page as subject of abbreviated method calls - should
@@ -41,9 +42,9 @@ describe "User pages" do
 
     describe "with valid information" do
       before do
-        fill_in "Name",         with: "Example User"
-        fill_in "Email",        with: "user@example.com"
-        fill_in "Password",     with: "foobar"
+        fill_in "Name", with: "Example User"
+        fill_in "Email", with: "user@example.com"
+        fill_in "Password", with: "foobar"
         fill_in "Password confirmation", with: "foobar"
       end
       
@@ -53,6 +54,7 @@ describe "User pages" do
         
         it { should have_selector('title', text: user.name) }
         it { should have_selector('div.alert.alert-success', text: 'Welcome') }
+        it { should have_link('Sign out') }
       end
 
     
