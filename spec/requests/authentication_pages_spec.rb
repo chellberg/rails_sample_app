@@ -79,10 +79,9 @@ describe "Authentication" do
           before { delete user_path(user) }
           specify { response.should redirect_to(root_url) } #e.g. it shouldn't work
         end
+     
       end
-   
       
-
       before { visit edit_user_path(user) }
       it { should have_selector('title', text: 'Sign in') }
     
@@ -103,10 +102,32 @@ describe "Authentication" do
           before { visit users_path }
           it { should have_selector('title', text: 'Sign in') }
         end
-        
       end
     end
     
+    describe "as signed-in user" do
+      let(:user) { FactoryGirl.create(:user) }
+      before { sign_in user }
+
+      describe "accessing User#new" do
+        before { get new_user_path }
+        specify { response.should redirect_to(root_path) }
+      end
+      
+      describe "accessing User#create" do
+        before do
+          @user_new = { name: "Example User",
+                        email: "user@example.com",
+                        password: "foobar",
+                        password_confirmation: "foobar"
+                      }
+          post users_path, user: @user_new
+        end
+        
+        specify { response.should redirect_to(root_path) }
+      end
+    end
+
     describe "as wrong user" do
       let(:user) { FactoryGirl.create(:user) }
       let(:wrong_user) { FactoryGirl.create(:user, email: "wrong@example.com") }
