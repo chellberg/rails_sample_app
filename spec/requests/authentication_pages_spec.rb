@@ -115,15 +115,7 @@ describe "Authentication" do
       end
       
       describe "accessing User#create" do
-        before do
-          @user_new = { name: "Example User",
-                        email: "user@example.com",
-                        password: "foobar",
-                        password_confirmation: "foobar"
-                      }
-          post users_path, user: @user_new
-        end
-        
+        before { post users_path, user: @user_new } # Had a user hash here but it's unnecessary
         specify { response.should redirect_to(root_path) }
       end
     end
