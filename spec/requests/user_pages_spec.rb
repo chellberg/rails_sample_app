@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe "User pages" do
 
   subject { page } #specifies page as subject of abbreviated method calls - should
@@ -50,15 +49,13 @@ describe "User pages" do
       
       describe "after saving the user" do
         before { click_button submit }
+
         let(:user) { User.find_by_email('user@example.com') }
         
         it { should have_selector('title', text: user.name) }
         it { should have_selector('div.alert.alert-success', text: 'Welcome') }
         it { should have_link('Sign out') }
-      end
-
-    
-    
+      end    
   
       it "should create a user" do
         expect { click_button submit }.to change(User, :count).by(1)
@@ -68,7 +65,19 @@ describe "User pages" do
 
   describe "edit" do
     let(:user) { FactoryGirl.create(:user) }
-    before { visit edit_user_path(user) }
+    
+    before do
+#     puts user.name
+      sign_in user
+#     puts "path before attempting to visit edit is #{current_path}"
+      visit edit_user_path(user) 
+#     puts "path after attempting to visit edit is #{current_path}"
+#     puts "user is valid" if user.valid? 
+#     puts user.id
+#     puts user.email
+#     puts user.name
+     
+    end
 
     describe "page" do
       it { should have_selector('h1', text: "Update your profile") }
@@ -81,7 +90,29 @@ describe "User pages" do
 
       it { should have_content('error') }
     end
+
+    describe "with valid information" do
+      let(:new_name) { "New Name" }
+      let(:new_email) { "new@example.com" }
+
+
+      before do
+        fill_in "Name", with: new_name
+        fill_in "Email", with: new_email
+        fill_in "Password", with: user.password
+        fill_in "Password confirmation", with: user.password
+        click_button "Save changes"        
+      end
+      
+      it { should have_selector('title', text: new_name) }
+      it { should have_selector('div.alert.alert-success') }
+      it { should have_link('Sign out', href: signout_path) }
+      specify { user.reload.name.should == new_name }
+      specify { user.reload.email.should == new_email }
+    end
+    
   end
+ 
 
 end
 

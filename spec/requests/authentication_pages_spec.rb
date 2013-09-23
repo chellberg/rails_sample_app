@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "Authentication" do
   
   subject { page }
-  
+  let(:user) { FactoryGirl.create(:user) }
   describe "signin page" do
     before { visit signin_path }
 
@@ -30,7 +30,7 @@ describe "Authentication" do
     end
     
     describe "with valid information" do
-      let(:user) { FactoryGirl.create(:user) }
+
       before { valid_signin(user) }
       
       it { should have_selector('title', text: user.name) }
@@ -42,6 +42,28 @@ describe "Authentication" do
       describe "followed by signout" do 
         before { click_link "Sign out" }
         it { should have_link('Sign in') }
+      end
+    end
+  end
+  
+  describe "authorization" do
+    
+    describe "for non-signed-in users" do
+      before { visit edit_user_path(user) }
+      it { should have_selector('title', text: 'Sign in') }
+    
+    
+      describe "in the Users controller" do
+
+        describe "visiting the edit page" do
+          before { visit edit_user_path(user) }
+          it { should have_selector('title', text: 'Sign in') }
+        end
+
+        describe "submitting to the update action" do
+          before { put user_path(user) } # Alternate way to test HTTP without using Capybara visit 
+          specify { response.should redirect_to(signin_path) }
+        end
       end
     end
   end
