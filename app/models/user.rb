@@ -35,7 +35,7 @@ class User < ActiveRecord::Base
   after_validation { self.errors.messages.delete(:password_digest) } #redundant error doesn't need to render in partial
 
   def feed
-    Micropost.where("user_id = ?", id)
+    Micropost.from_users_followed_by(self)
   end
   
   def following?(other_user)
